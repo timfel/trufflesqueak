@@ -1,0 +1,2 @@
+DEFAULT_VM=server
+DEFAULT_DYNAMIC_IMPORTS=truffle/compiler
