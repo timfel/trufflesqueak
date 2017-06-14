@@ -1,11 +1,5 @@
 package de.hpi.swa.trufflesqueak.util;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.IntBuffer;
-import java.util.List;
-import java.util.Vector;
-
 import de.hpi.swa.trufflesqueak.SqueakImageContext;
 import de.hpi.swa.trufflesqueak.model.ClassObject;
 import de.hpi.swa.trufflesqueak.model.CompiledMethodObject;
@@ -16,6 +10,11 @@ import de.hpi.swa.trufflesqueak.model.ListObject;
 import de.hpi.swa.trufflesqueak.model.NativeObject;
 import de.hpi.swa.trufflesqueak.model.PointersObject;
 import de.hpi.swa.trufflesqueak.model.SqueakObject;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.IntBuffer;
+import java.util.List;
+import java.util.Vector;
 
 public class Chunk {
     Object object;
@@ -188,10 +187,10 @@ public class Chunk {
                 return chunk.asObject();
             }
         } else if ((ptr & 1) == 1) {
-            return (int) (ptr >> 1);
+            return ptr >> 1;
         } else {
             assert ((ptr & 3) == 2);
-            return (int) (ptr >> 2);
+            return ptr >> 2;
         }
     }
 

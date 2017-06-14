@@ -1,14 +1,7 @@
 package de.hpi.swa.trufflesqueak.nodes.primitives;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-
 import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
 import com.oracle.truffle.api.nodes.Node.Child;
-
 import de.hpi.swa.trufflesqueak.model.CompiledCodeObject;
 import de.hpi.swa.trufflesqueak.model.CompiledMethodObject;
 import de.hpi.swa.trufflesqueak.nodes.SqueakNode;
@@ -79,6 +72,11 @@ import de.hpi.swa.trufflesqueak.nodes.primitives.impl.PrimStringAtPutNodeGen;
 import de.hpi.swa.trufflesqueak.nodes.primitives.impl.PrimSubNodeGen;
 import de.hpi.swa.trufflesqueak.nodes.primitives.impl.PrimSystemAttributeNodeGen;
 import de.hpi.swa.trufflesqueak.nodes.primitives.impl.PrimUtcClockNodeGen;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 public abstract class PrimitiveNodeFactory {
     private static final int PRIM_COUNT = 574;

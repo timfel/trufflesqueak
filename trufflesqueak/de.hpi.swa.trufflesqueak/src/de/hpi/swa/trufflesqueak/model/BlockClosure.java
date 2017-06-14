@@ -10,7 +10,6 @@ import com.oracle.truffle.api.frame.FrameInstance;
 import com.oracle.truffle.api.frame.FrameInstanceVisitor;
 import com.oracle.truffle.api.frame.FrameSlot;
 import com.oracle.truffle.api.frame.FrameUtil;
-
 import de.hpi.swa.trufflesqueak.SqueakImageContext;
 import de.hpi.swa.trufflesqueak.exceptions.PrimitiveFailed;
 import de.hpi.swa.trufflesqueak.util.Chunk;
@@ -90,12 +89,15 @@ public class BlockClosure extends BaseSqueakObject {
         switch (i) {
             case BLKCLSR_OUTER_CONTEXT:
                 context = obj;
+                break;
             case BLKCLSR_COMPILEDBLOCK:
                 block = (CompiledBlockObject) obj;
+                break;
             case BLKCLSR_NUMARGS:
                 throw new PrimitiveFailed();
             case BLKCLSR_RECEIVER:
                 receiver = obj;
+                break;
             default:
                 stack[i - BLKCLSR_SIZE] = obj;
         }
