@@ -10,10 +10,14 @@ import com.oracle.truffle.api.dsl.NodeFactory;
 import com.oracle.truffle.api.dsl.Specialization;
 import de.hpi.swa.trufflesqueak.exceptions.PrimitiveFailed;
 import de.hpi.swa.trufflesqueak.model.CompiledCodeObject;
+import de.hpi.swa.trufflesqueak.model.CompiledMethodObject;
+import de.hpi.swa.trufflesqueak.model.NativeObject;
 import de.hpi.swa.trufflesqueak.nodes.context.ArgumentNode;
 import de.hpi.swa.trufflesqueak.nodes.context.ArgumentProfileNode;
 import de.hpi.swa.trufflesqueak.nodes.primitives.BuiltinPrimitive;
 import de.hpi.swa.trufflesqueak.nodes.primitives.Primitive;
+import de.hpi.swa.trufflesqueak.nodes.primitives.PrimitiveBinaryOperation;
+
 import java.math.BigInteger;
 import java.util.List;
 
@@ -23,6 +27,18 @@ public final class ArithmeticPrimitives {
         return ArithmeticPrimitivesFactory.getFactories();
     }
 
+    public BuiltinPrimitive forName(CompiledCodeObject cc, String module, String functionName) {
+        List<NodeFactory<? extends BuiltinPrimitive>> factories = getNodeFactories();
+        assert factories != null : "No factories found. Override getFactories() to resolve this.";
+        for (NodeFactory<? extends BuiltinPrimitive> factory : factories) {
+            Primitive annotation = factory.getNodeClass().getAnnotation(Primitive.class);
+            if (annotation.module().equals(module) && annotation.name().equals(functionName)) {
+                return getBuiltinPrimitive(cc, factory, annotation);
+            }
+        }
+        return null;
+    }
+
     public BuiltinPrimitive forIdx(CompiledCodeObject cc, int index) {
         List<NodeFactory<? extends BuiltinPrimitive>> factories = getNodeFactories();
         assert factories != null : "No factories found. Override getFactories() to resolve this.";
@@ -30,19 +46,23 @@ public final class ArithmeticPrimitives {
             Primitive annotation = factory.getNodeClass().getAnnotation(Primitive.class);
             for (int idx : annotation.indices()) {
                 if (idx == index) {
-                    Object[] arguments = new Object[index + 1];
-                    arguments[0] = cc;
-                    for (int i = 0; i < annotation.numberOfArguments(); i++) {
-                        arguments[i + 1] = new ArgumentProfileNode(new ArgumentNode(i));
-                    }
-                    return factory.createNode(arguments);
+                    return getBuiltinPrimitive(cc, factory, annotation);
                 }
             }
         }
         return null;
     }
 
-    @Primitive(indices = {1, 21, 41}, numberOfArguments = 2)
+    private static BuiltinPrimitive getBuiltinPrimitive(CompiledCodeObject cc, NodeFactory<? extends BuiltinPrimitive> factory, Primitive annotation) {
+        Object[] arguments = new Object[annotation.numberOfArguments() + 1];
+        arguments[0] = cc;
+        for (int i = 0; i < annotation.numberOfArguments(); i++) {
+            arguments[i + 1] = new ArgumentProfileNode(new ArgumentNode(i));
+        }
+        return factory.createNode(arguments);
+    }
+
+    @Primitive(indices = {1, 21, 41}, numberOfArguments = 2, module = "LargeIntegers", name = "primDigitAdd")
     @GenerateNodeFactory
     public abstract static class Add extends BuiltinPrimitive {
 
@@ -76,7 +96,7 @@ public final class ArithmeticPrimitives {
         }
     }
 
-    @Primitive(indices = {2, 22, 42}, numberOfArguments = 2)
+    @Primitive(indices = {2, 22, 42}, numberOfArguments = 2, module = "LargeIntegers", name = "primDigitSubtract")
     @GenerateNodeFactory
     public abstract static class Sub extends BuiltinPrimitive {
 
@@ -294,7 +314,7 @@ public final class ArithmeticPrimitives {
         }
     }
 
-    @Primitive(indices = {9, 29, 49}, numberOfArguments = 2)
+    @Primitive(indices = {9, 29, 49}, numberOfArguments = 2, module = "LargeIntegers", name = "primDigitMultiplyNegative")
     @GenerateNodeFactory
     public static class Mul extends BuiltinPrimitive {
 
@@ -385,7 +405,7 @@ public final class ArithmeticPrimitives {
         }
     }
 
-    @Primitive(indices = {11, 31, 51}, numberOfArguments = 2)
+    @Primitive(indices = {11, 31}, numberOfArguments = 2)
     @GenerateNodeFactory
     public static class Mod extends BuiltinPrimitive {
         public Mod(CompiledCodeObject cm) {
@@ -432,6 +452,276 @@ public final class ArithmeticPrimitives {
         }
     }
 
+    @Primitive(indices = {12, 32}, numberOfArguments = 2)
+    @GenerateNodeFactory
+    public static class Div extends BuiltinPrimitive {
+        public Div(CompiledCodeObject cm) {
+            super(cm);
+        }
+
+        @Specialization(rewriteOn = ArithmeticException.class)
+        int div(int a, int b) {
+            if (a == Integer.MIN_VALUE && b == -1) {
+                throw new ArithmeticException();
+            }
+            return Math.floorDiv(a, b);
+        }
+
+        @Specialization(rewriteOn = ArithmeticException.class)
+        int divInt(long a, long b) {
+            if (a == Long.MIN_VALUE && b == -1) {
+                throw new ArithmeticException();
+            }
+            return Math.toIntExact(Math.floorDiv(a, b));
+        }
+
+        @Specialization(rewriteOn = ArithmeticException.class)
+        long div(long a, long b) {
+            if (a == Long.MIN_VALUE && b == -1) {
+                throw new ArithmeticException();
+            }
+            return Math.floorDiv(a, b);
+        }
+
+        @Specialization(rewriteOn = ArithmeticException.class)
+        int divInt(BigInteger a, BigInteger b) {
+            return a.divide(b).intValueExact();
+        }
+
+        @Specialization(rewriteOn = ArithmeticException.class)
+        long div(BigInteger a, BigInteger b) {
+            return a.divide(b).longValueExact();
+        }
+
+        @Specialization
+        BigInteger divBig(BigInteger a, BigInteger b) {
+            return a.divide(b);
+        }
+    }
+
+    @Primitive(indices = {13, 33}, numberOfArguments = 2)
+    public static class Quo extends BuiltinPrimitive {
+        public Quo(CompiledCodeObject cm) {
+            super(cm);
+        }
+
+        @Specialization
+        int quo(int a, int b) {
+            return a / b;
+        }
+
+        @Specialization(rewriteOn = ArithmeticException.class)
+        int quoInt(long a, long b) {
+            return Math.toIntExact(a / b);
+        }
+
+        @Specialization
+        long quo(long a, long b) {
+            return a / b;
+        }
+
+        @Specialization(rewriteOn = ArithmeticException.class)
+        int quoInt(BigInteger a, BigInteger b) {
+            return a.divide(b).intValueExact();
+        }
+
+        @Specialization(rewriteOn = ArithmeticException.class)
+        long quo(BigInteger a, BigInteger b) {
+            return a.divide(b).longValueExact();
+        }
+
+        @Specialization
+        BigInteger quoBig(BigInteger a, BigInteger b) {
+            return a.divide(b);
+        }
+    }
+
+    @Primitive(indices = {14, 44}, numberOfArguments = 2, module = "LargeIntegers", name = "primDigitBitAnd")
+    @GenerateNodeFactory
+    public static class BitAnd extends BuiltinPrimitive {
+        public BitAnd(CompiledCodeObject cm) {
+            super(cm);
+        }
+
+        @Specialization
+        protected int bitAnd(int receiver, int arg) {
+            return receiver & arg;
+        }
+
+        @Specialization
+        protected long bitAnd(long receiver, long arg) {
+            return receiver & arg;
+        }
+
+        @Specialization
+        protected BigInteger bitAnd(BigInteger receiver, BigInteger arg) {
+            return receiver.and(arg);
+        }
+    }
+
+    @Primitive(indices = {15, 45}, numberOfArguments = 2, module = "LargeIntegers", name = "primDigitBitOr")
+    @GenerateNodeFactory
+    public static class BitOr extends BuiltinPrimitive {
+        public BitOr(CompiledCodeObject cm) {
+            super(cm);
+        }
+
+        @Specialization
+        protected int bitOr(int receiver, int arg) {
+            return receiver | arg;
+        }
+
+        @Specialization
+        protected long bitOr(long receiver, long arg) {
+            return receiver | arg;
+        }
+
+        @Specialization
+        protected BigInteger bitOr(BigInteger receiver, BigInteger arg) {
+            return receiver.and(arg);
+        }
+    }
+
+    @Primitive(indices = {16, 46}, numberOfArguments = 2)
+    @GenerateNodeFactory
+    public static class BitXor extends BuiltinPrimitive {
+        public BitXor(CompiledCodeObject cm) {
+            super(cm);
+        }
+
+        @Specialization
+        protected int bitXor(int receiver, int arg) {
+            return receiver ^ arg;
+        }
+
+        @Specialization
+        protected long bitXor(long receiver, long arg) {
+            return receiver ^ arg;
+        }
+
+        @Specialization
+        protected BigInteger bitXor(BigInteger receiver, BigInteger arg) {
+            return receiver.and(arg);
+        }
+    }
+
+    @Primitive(indices = {17, 47}, numberOfArguments = 2, module = "LargeIntegers", name = "primDigitBitShiftMagnitude")
+    public static class BitShift extends BuiltinPrimitive {
+        @Child PrimNormalize normalizeNode;
+
+        public BitShift(CompiledCodeObject cm) {
+            super(cm);
+            normalizeNode = new PrimNormalize((CompiledMethodObject)cm);
+        }
+
+        @Specialization(guards = {"arg <= 0"})
+        protected int bitShiftRightInt(int receiver, int arg) {
+            return receiver >> -arg;
+        }
+
+        @Specialization(guards = {"arg <= 0"}, rewriteOn = ArithmeticException.class)
+        protected int bitShiftRightInt(long receiver, int arg) {
+            return Math.toIntExact(receiver >> -arg);
+        }
+
+        @Specialization(guards = {"arg <= 0"})
+        protected long bitShiftRightLong(long receiver, int arg) {
+            return receiver >> -arg;
+        }
+
+        @Specialization(guards = {"arg <= 0"}, rewriteOn = ArithmeticException.class)
+        protected int bitShiftRightInt(BigInteger receiver, int arg) {
+            return receiver.shiftRight(-arg).intValueExact();
+        }
+
+        @Specialization(guards = {"arg <= 0"}, rewriteOn = ArithmeticException.class)
+        protected long bitShiftRightLong(BigInteger receiver, int arg) {
+            return receiver.shiftRight(-arg).longValueExact();
+        }
+
+        @Specialization(guards = {"arg <= 0"})
+        protected BigInteger bitShiftRightBig(BigInteger receiver, int arg) {
+            return receiver.shiftRight(-arg);
+        }
+
+        @Specialization(guards = {"arg > 0"}, rewriteOn = ArithmeticException.class)
+        protected int bitShiftLeftInt(BigInteger receiver, int arg) {
+            return receiver.shiftLeft(arg).intValueExact();
+        }
+
+        @Specialization(guards = {"arg > 0"}, rewriteOn = ArithmeticException.class)
+        protected long bitShiftLeftLong(BigInteger receiver, int arg) {
+            return receiver.shiftLeft(arg).longValueExact();
+        }
+
+        @Specialization(guards = {"arg > 0"})
+        protected BigInteger bitShiftLeft(BigInteger receiver, int arg) {
+            return receiver.shiftLeft(arg);
+        }
+
+        @Specialization(rewriteOn = ArithmeticException.class)
+        protected long bitShiftNativeLong(NativeObject receiver, int arg) {
+            return shiftNative(receiver, arg).longValueExact();
+        }
+
+        @Specialization(rewriteOn = ArithmeticException.class)
+        protected BigInteger bitShiftNativeBig(NativeObject receiver, int arg) {
+            return shiftNative(receiver, arg);
+        }
+
+        private BigInteger shiftNative(NativeObject receiver, int arg) {
+            BigInteger integer = normalizeNode.normalizeBig(receiver);
+            if (arg < 0) {
+                return integer.shiftRight(-arg);
+            } else {
+                return integer.shiftLeft(arg);
+            }
+        }
+    }
+
+    @Primitive(indices = {51}, numberOfArguments = 1)
+    @GenerateNodeFactory
+    public static class FloatTruncated extends BuiltinPrimitive {
+        public FloatTruncated(CompiledMethodObject cm) {
+            super(cm);
+        }
+
+        @Specialization(rewriteOn = ArithmeticException.class)
+        int truncateToInt(double receiver) {
+            return Math.toIntExact((long) Math.floor(receiver));
+        }
+
+        @Specialization
+        long truncate(double receiver) {
+            return (long) Math.floor(receiver);
+        }
+    }
+
+    @Primitive(indices = {53}, numberOfArguments = 1)
+    @GenerateNodeFactory
+    public static class FloatExponent extends BuiltinPrimitive {
+        public FloatExponent(CompiledCodeObject cm) {
+            super(cm);
+        }
+
+        @Specialization
+        int exponentAsInt(double receiver) {
+            return Math.getExponent(receiver);
+        }
+    }
+
+    @Primitive(indices = {54}, numberOfArguments = 2)
+    @GenerateNodeFactory
+    public static class PrimFloatTimesTwoPower extends BuiltinPrimitive {
+        public PrimFloatTimesTwoPower(CompiledCodeObject cm) {
+            super(cm);
+        }
+
+        @Specialization
+        double calc(double receiver, long argument) {
+            return receiver * Math.pow(2, argument);
+        }
+    }
 
     @Primitive(indices = {40}, numberOfArguments = 1)
     @GenerateNodeFactory
