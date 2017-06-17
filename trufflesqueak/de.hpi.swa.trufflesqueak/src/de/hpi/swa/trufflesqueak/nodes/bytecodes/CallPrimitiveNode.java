@@ -13,12 +13,12 @@ import de.hpi.swa.trufflesqueak.exceptions.PrimitiveFailed;
 import de.hpi.swa.trufflesqueak.instrumentation.PrettyPrintVisitor;
 import de.hpi.swa.trufflesqueak.model.CompiledCodeObject;
 import de.hpi.swa.trufflesqueak.nodes.SqueakNode;
-import de.hpi.swa.trufflesqueak.nodes.primitives.PrimitiveNode;
+import de.hpi.swa.trufflesqueak.nodes.primitives.BuiltinPrimitive;
 import de.hpi.swa.trufflesqueak.nodes.primitives.PrimitiveNodeFactory;
-import de.hpi.swa.trufflesqueak.nodes.primitives.PrimitiveQuickReturnNode;
+import de.hpi.swa.trufflesqueak.nodes.primitives.impl.QuickPrimitives.QuickReturnPrimitive;
 
 public class CallPrimitiveNode extends SqueakBytecodeNode {
-    @Child PrimitiveNode primitive;
+    @Child BuiltinPrimitive primitive;
 
     @SuppressWarnings("unused")
     public CallPrimitiveNode(CompiledCodeObject method, int idx, int i, int j) {
@@ -76,7 +76,7 @@ public class CallPrimitiveNode extends SqueakBytecodeNode {
 
     @Override
     public boolean isReturn() {
-        return primitive instanceof PrimitiveQuickReturnNode;
+        return primitive instanceof QuickReturnPrimitive;
     }
 
     @Override

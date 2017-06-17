@@ -1,68 +1,28 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package de.hpi.swa.trufflesqueak.nodes.primitives.impl;
-
-import com.oracle.truffle.api.dsl.GenerateNodeFactory;
-import com.oracle.truffle.api.dsl.NodeFactory;
-import com.oracle.truffle.api.dsl.Specialization;
-import de.hpi.swa.trufflesqueak.exceptions.PrimitiveFailed;
-import de.hpi.swa.trufflesqueak.model.CompiledCodeObject;
-import de.hpi.swa.trufflesqueak.model.CompiledMethodObject;
-import de.hpi.swa.trufflesqueak.model.NativeObject;
-import de.hpi.swa.trufflesqueak.nodes.context.ArgumentNode;
-import de.hpi.swa.trufflesqueak.nodes.context.ArgumentProfileNode;
-import de.hpi.swa.trufflesqueak.nodes.primitives.BuiltinPrimitive;
-import de.hpi.swa.trufflesqueak.nodes.primitives.Primitive;
-import de.hpi.swa.trufflesqueak.nodes.primitives.PrimitiveBinaryOperation;
 
 import java.math.BigInteger;
 import java.util.List;
 
-public final class ArithmeticPrimitives {
+import com.oracle.truffle.api.dsl.GenerateNodeFactory;
+import com.oracle.truffle.api.dsl.NodeFactory;
+import com.oracle.truffle.api.dsl.Specialization;
 
+import de.hpi.swa.trufflesqueak.exceptions.PrimitiveFailed;
+import de.hpi.swa.trufflesqueak.model.CompiledCodeObject;
+import de.hpi.swa.trufflesqueak.model.CompiledMethodObject;
+import de.hpi.swa.trufflesqueak.model.LargeInteger;
+import de.hpi.swa.trufflesqueak.model.ListObject;
+import de.hpi.swa.trufflesqueak.model.NativeObject;
+import de.hpi.swa.trufflesqueak.nodes.primitives.BuiltinPrimitive;
+import de.hpi.swa.trufflesqueak.nodes.primitives.Primitive;
+
+public final class ArithmeticPrimitives extends Primitives {
+    @Override
     protected List<NodeFactory<? extends BuiltinPrimitive>> getNodeFactories() {
         return ArithmeticPrimitivesFactory.getFactories();
     }
 
-    public BuiltinPrimitive forName(CompiledCodeObject cc, String module, String functionName) {
-        List<NodeFactory<? extends BuiltinPrimitive>> factories = getNodeFactories();
-        assert factories != null : "No factories found. Override getFactories() to resolve this.";
-        for (NodeFactory<? extends BuiltinPrimitive> factory : factories) {
-            Primitive annotation = factory.getNodeClass().getAnnotation(Primitive.class);
-            if (annotation.module().equals(module) && annotation.name().equals(functionName)) {
-                return getBuiltinPrimitive(cc, factory, annotation);
-            }
-        }
-        return null;
-    }
-
-    public BuiltinPrimitive forIdx(CompiledCodeObject cc, int index) {
-        List<NodeFactory<? extends BuiltinPrimitive>> factories = getNodeFactories();
-        assert factories != null : "No factories found. Override getFactories() to resolve this.";
-        for (NodeFactory<? extends BuiltinPrimitive> factory : factories) {
-            Primitive annotation = factory.getNodeClass().getAnnotation(Primitive.class);
-            for (int idx : annotation.indices()) {
-                if (idx == index) {
-                    return getBuiltinPrimitive(cc, factory, annotation);
-                }
-            }
-        }
-        return null;
-    }
-
-    private static BuiltinPrimitive getBuiltinPrimitive(CompiledCodeObject cc, NodeFactory<? extends BuiltinPrimitive> factory, Primitive annotation) {
-        Object[] arguments = new Object[annotation.numberOfArguments() + 1];
-        arguments[0] = cc;
-        for (int i = 0; i < annotation.numberOfArguments(); i++) {
-            arguments[i + 1] = new ArgumentProfileNode(new ArgumentNode(i));
-        }
-        return factory.createNode(arguments);
-    }
-
-    @Primitive(indices = {1, 21, 41}, numberOfArguments = 2, module = "LargeIntegers", name = "primDigitAdd")
+    @Primitive(indices = {1, 21, 41}, numberOfArguments = 2, module = "LargeIntegers", names = {"primDigitAdd"})
     @GenerateNodeFactory
     public abstract static class Add extends BuiltinPrimitive {
 
@@ -96,7 +56,7 @@ public final class ArithmeticPrimitives {
         }
     }
 
-    @Primitive(indices = {2, 22, 42}, numberOfArguments = 2, module = "LargeIntegers", name = "primDigitSubtract")
+    @Primitive(indices = {2, 22, 42}, numberOfArguments = 2, module = "LargeIntegers", names = {"primDigitSubtract"})
     @GenerateNodeFactory
     public abstract static class Sub extends BuiltinPrimitive {
 
@@ -314,7 +274,7 @@ public final class ArithmeticPrimitives {
         }
     }
 
-    @Primitive(indices = {9, 29, 49}, numberOfArguments = 2, module = "LargeIntegers", name = "primDigitMultiplyNegative")
+    @Primitive(indices = {9, 29, 49}, numberOfArguments = 2, module = "LargeIntegers", names = {"primDigitMultiplyNegative"})
     @GenerateNodeFactory
     public static class Mul extends BuiltinPrimitive {
 
@@ -536,7 +496,7 @@ public final class ArithmeticPrimitives {
         }
     }
 
-    @Primitive(indices = {14, 44}, numberOfArguments = 2, module = "LargeIntegers", name = "primDigitBitAnd")
+    @Primitive(indices = {14, 44}, numberOfArguments = 2, module = "LargeIntegers", names = {"primDigitBitAnd"})
     @GenerateNodeFactory
     public static class BitAnd extends BuiltinPrimitive {
         public BitAnd(CompiledCodeObject cm) {
@@ -559,7 +519,7 @@ public final class ArithmeticPrimitives {
         }
     }
 
-    @Primitive(indices = {15, 45}, numberOfArguments = 2, module = "LargeIntegers", name = "primDigitBitOr")
+    @Primitive(indices = {15, 45}, numberOfArguments = 2, module = "LargeIntegers", names = {"primDigitBitOr"})
     @GenerateNodeFactory
     public static class BitOr extends BuiltinPrimitive {
         public BitOr(CompiledCodeObject cm) {
@@ -605,13 +565,13 @@ public final class ArithmeticPrimitives {
         }
     }
 
-    @Primitive(indices = {17, 47}, numberOfArguments = 2, module = "LargeIntegers", name = "primDigitBitShiftMagnitude")
+    @Primitive(indices = {17, 47}, numberOfArguments = 2, module = "LargeIntegers", names = {"primDigitBitShiftMagnitude"})
     public static class BitShift extends BuiltinPrimitive {
-        @Child PrimNormalize normalizeNode;
+        @Child Normalize normalizeNode;
 
         public BitShift(CompiledCodeObject cm) {
             super(cm);
-            normalizeNode = new PrimNormalize((CompiledMethodObject)cm);
+            normalizeNode = new Normalize(cm);
         }
 
         @Specialization(guards = {"arg <= 0"})
@@ -679,6 +639,30 @@ public final class ArithmeticPrimitives {
         }
     }
 
+    @Primitive(indices = {40}, numberOfArguments = 1)
+    @GenerateNodeFactory
+    public static class AsFloat extends BuiltinPrimitive {
+
+        public AsFloat(CompiledCodeObject cm) {
+            super(cm);
+        }
+
+        @Specialization
+        double asFloat(int v) {
+            return v;
+        }
+
+        @Specialization
+        double asFloat(long v) {
+            return v;
+        }
+
+        @Specialization
+        double asFloat(double v) {
+            return v;
+        }
+    }
+
     @Primitive(indices = {51}, numberOfArguments = 1)
     @GenerateNodeFactory
     public static class FloatTruncated extends BuiltinPrimitive {
@@ -712,8 +696,8 @@ public final class ArithmeticPrimitives {
 
     @Primitive(indices = {54}, numberOfArguments = 2)
     @GenerateNodeFactory
-    public static class PrimFloatTimesTwoPower extends BuiltinPrimitive {
-        public PrimFloatTimesTwoPower(CompiledCodeObject cm) {
+    public static class FloatTimesTwoPower extends BuiltinPrimitive {
+        public FloatTimesTwoPower(CompiledCodeObject cm) {
             super(cm);
         }
 
@@ -723,27 +707,136 @@ public final class ArithmeticPrimitives {
         }
     }
 
-    @Primitive(indices = {40}, numberOfArguments = 1)
+    @Primitive(indices = {55}, numberOfArguments = 1)
     @GenerateNodeFactory
-    public static class AsFloat extends BuiltinPrimitive {
-
-        public AsFloat(CompiledCodeObject cm) {
+    public static class SquareRoot extends BuiltinPrimitive {
+        public SquareRoot(CompiledCodeObject cm) {
             super(cm);
         }
 
         @Specialization
-        double asFloat(int v) {
-            return v;
+        double squareRoot(double a) {
+            return Math.sqrt(a);
+        }
+    }
+
+    @Primitive(indices = {56}, numberOfArguments = 1)
+    @GenerateNodeFactory
+    public static class Sin extends BuiltinPrimitive {
+        public Sin(CompiledCodeObject cm) {
+            super(cm);
         }
 
         @Specialization
-        double asFloat(long v) {
-            return v;
+        double sin(double a) {
+            return Math.sin(a);
+        }
+    }
+
+    @Primitive(indices = {57}, numberOfArguments = 1)
+    @GenerateNodeFactory
+    public static class ArcTan extends BuiltinPrimitive {
+        public ArcTan(CompiledCodeObject cm) {
+            super(cm);
         }
 
         @Specialization
-        double asFloat(double v) {
-            return v;
+        double atan(double a) {
+            return Math.atan(a);
+        }
+    }
+
+    @Primitive(indices = {58}, numberOfArguments = 1)
+    @GenerateNodeFactory
+    public static class LogN extends BuiltinPrimitive {
+        public LogN(CompiledCodeObject cm) {
+            super(cm);
+        }
+
+        @Specialization
+        double log(double a) {
+            return Math.log(a);
+        }
+    }
+
+    @Primitive(indices = {59}, numberOfArguments = 1)
+    @GenerateNodeFactory
+    public static class Exp extends BuiltinPrimitive {
+        public Exp(CompiledCodeObject cm) {
+            super(cm);
+        }
+
+        @Specialization
+        double exp(double a) {
+            return Math.exp(a);
+        }
+    }
+
+    @Primitive(names = {"primDigitDivNegative"}, module = "LargeIntegers")
+    @GenerateNodeFactory
+    public static class LargeDigitDiv extends BuiltinPrimitive {
+        public LargeDigitDiv(CompiledCodeObject cm) {
+            super(cm);
+        }
+
+        @Specialization
+        ListObject div(BigInteger rcvr, BigInteger arg) {
+            BigInteger[] divRem = rcvr.divideAndRemainder(arg);
+            return method.image.wrap(new Object[]{
+                            method.image.wrap(divRem[0]),
+                            method.image.wrap(divRem[1])});
+        }
+    }
+
+    @Primitive(names = {"primNormalizePositive", "primNormalizeNegative"}, module = "LargeIntegers")
+    @GenerateNodeFactory
+    public static class Normalize extends BuiltinPrimitive {
+        public Normalize(CompiledCodeObject cm) {
+            super(cm);
+        }
+
+        @Specialization
+        int normalizeInt(int o) {
+            return o;
+        }
+
+        @Specialization
+        long normalizeLong(long o) {
+            return o;
+        }
+
+        @Specialization(rewriteOn = ArithmeticException.class)
+        int normalizeInt(BigInteger o) {
+            return o.intValueExact();
+        }
+
+        @Specialization(rewriteOn = ArithmeticException.class)
+        long normalizeLong(BigInteger o) {
+            return o.longValueExact();
+        }
+
+        @Specialization
+        BigInteger normalizeBig(BigInteger o) {
+            return o;
+        }
+
+        @Specialization(rewriteOn = ArithmeticException.class)
+        int normalizeInt(NativeObject o) {
+            return bigIntFromNative(o).intValueExact();
+        }
+
+        @Specialization(rewriteOn = ArithmeticException.class)
+        long normalizeLong(NativeObject o) {
+            return bigIntFromNative(o).longValueExact();
+        }
+
+        @Specialization
+        BigInteger normalizeBig(NativeObject o) {
+            return bigIntFromNative(o);
+        }
+
+        private BigInteger bigIntFromNative(NativeObject o) {
+            return new LargeInteger(method.image, o.getSqClass(), o.getBytes()).getValue();
         }
     }
 }

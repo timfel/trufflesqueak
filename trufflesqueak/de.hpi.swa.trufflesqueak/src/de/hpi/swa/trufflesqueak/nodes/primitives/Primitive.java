@@ -15,7 +15,8 @@ import java.lang.annotation.RetentionPolicy;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Primitive {
     String module() default "";
-    String name() default "";
+
+    String[] names() default {};
 
     int[] indices() default {0};
 

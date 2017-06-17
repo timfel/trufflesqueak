@@ -13,16 +13,16 @@ import de.hpi.swa.trufflesqueak.model.CompiledCodeObject;
 import de.hpi.swa.trufflesqueak.nodes.SqueakNode;
 import de.hpi.swa.trufflesqueak.nodes.SqueakNodeWithMethod;
 
-/**
- *
- * @author tim
- */
 @NodeChildren({@NodeChild(value = "arguments", type = SqueakNode[].class)})
 public class BuiltinPrimitive extends SqueakNodeWithMethod {
     public BuiltinPrimitive(CompiledCodeObject method2) {
         super(method2);
     }
-    
+
+    protected static boolean isNull(Object obj) {
+        return obj == null;
+    }
+
     @Override
     public Object executeGeneric(VirtualFrame frame) {
         if (method.image.config.isVerbose()) {
