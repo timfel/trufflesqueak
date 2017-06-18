@@ -209,7 +209,7 @@ public abstract class CompiledCodeObject extends SqueakObject {
         int[] splitHeader = BitSplitter.splitter(hdr, new int[]{15, 1, 1, 1, 6, 4, 2, 1});
         numLiterals = splitHeader[0];
         isOptimized = splitHeader[1] == 1;
-        hasPrimitive = splitHeader[2] == 1;
+        hasPrimitive = bytes.length >= 3 && Byte.toUnsignedInt(bytes[0]) == 139;
         needsLargeFrame = splitHeader[3] == 1;
         numTemps = splitHeader[4];
         numArgs = splitHeader[5];

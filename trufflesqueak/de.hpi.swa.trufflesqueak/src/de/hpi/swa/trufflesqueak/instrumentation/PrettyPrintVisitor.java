@@ -32,7 +32,7 @@ import de.hpi.swa.trufflesqueak.nodes.context.FrameSlotWriteNode;
 import de.hpi.swa.trufflesqueak.nodes.context.MethodLiteralNode;
 import de.hpi.swa.trufflesqueak.nodes.context.ObjectAtNode;
 import de.hpi.swa.trufflesqueak.nodes.context.ObjectAtPutNode;
-import de.hpi.swa.trufflesqueak.nodes.primitives.PrimitiveNode;
+import de.hpi.swa.trufflesqueak.nodes.primitives.BuiltinPrimitive;
 
 public class PrettyPrintVisitor implements NodeVisitor {
     private static final String INDENT = "  ";
@@ -57,7 +57,7 @@ public class PrettyPrintVisitor implements NodeVisitor {
         node.accept(this);
     }
 
-    public void visit(PrimitiveNode node) {
+    public void visit(BuiltinPrimitive node) {
         append("<prim: ").append(node).append('>');
     }
 

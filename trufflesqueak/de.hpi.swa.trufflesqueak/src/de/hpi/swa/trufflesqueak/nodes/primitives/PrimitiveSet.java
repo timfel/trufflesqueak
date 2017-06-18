@@ -5,6 +5,7 @@ import java.util.List;
 import com.oracle.truffle.api.dsl.NodeFactory;
 
 import de.hpi.swa.trufflesqueak.model.CompiledCodeObject;
+import de.hpi.swa.trufflesqueak.nodes.SqueakNode;
 import de.hpi.swa.trufflesqueak.nodes.context.ArgumentNode;
 import de.hpi.swa.trufflesqueak.nodes.context.ArgumentProfileNode;
 
@@ -43,10 +44,12 @@ public abstract class PrimitiveSet {
 
     private static BuiltinPrimitive getBuiltinPrimitive(CompiledCodeObject cc, NodeFactory<? extends BuiltinPrimitive> factory, Primitive annotation) {
         int argumentNumber = Math.max(annotation.numberOfArguments(), annotation.maxNumberOfArguments());
-        Object[] arguments = new Object[argumentNumber + 1];
+        Object[] arguments = new Object[2];
         arguments[0] = cc;
+        SqueakNode[] argumentNodes = new SqueakNode[argumentNumber];
+        arguments[1] = argumentNodes;
         for (int i = 0; i < argumentNumber; i++) {
-            arguments[i + 1] = new ArgumentProfileNode(ArgumentNode.create(i));
+            argumentNodes[i] = new ArgumentProfileNode(ArgumentNode.create(i));
         }
         return factory.createNode(arguments);
     }
