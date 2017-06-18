@@ -1,4 +1,4 @@
-package de.hpi.swa.trufflesqueak.nodes.primitives.impl;
+package de.hpi.swa.trufflesqueak.nodes.primitives;
 
 import java.math.BigInteger;
 import java.util.List;
@@ -21,10 +21,8 @@ import de.hpi.swa.trufflesqueak.model.ListObject;
 import de.hpi.swa.trufflesqueak.model.NativeObject;
 import de.hpi.swa.trufflesqueak.nodes.context.SqueakLookupClassNode;
 import de.hpi.swa.trufflesqueak.nodes.context.SqueakLookupClassNodeGen;
-import de.hpi.swa.trufflesqueak.nodes.primitives.BuiltinPrimitive;
-import de.hpi.swa.trufflesqueak.nodes.primitives.Primitive;
 
-public class StoragePrimitives extends Primitives {
+public final class StoragePrimitives extends PrimitiveSet {
     @Override
     List<NodeFactory<? extends BuiltinPrimitive>> getNodeFactories() {
         return StoragePrimitivesFactory.getFactories();

@@ -1,4 +1,4 @@
-package de.hpi.swa.trufflesqueak.nodes.primitives.impl;
+package de.hpi.swa.trufflesqueak.nodes.primitives;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,9 +11,8 @@ import de.hpi.swa.trufflesqueak.model.CompiledCodeObject;
 import de.hpi.swa.trufflesqueak.nodes.SqueakNode;
 import de.hpi.swa.trufflesqueak.nodes.bytecodes.ReceiverNode;
 import de.hpi.swa.trufflesqueak.nodes.bytecodes.ReceiverVariableNode;
-import de.hpi.swa.trufflesqueak.nodes.primitives.BuiltinPrimitive;
 
-public class QuickPrimitives extends Primitives {
+public final class QuickPrimitives extends PrimitiveSet {
     @Override
     List<NodeFactory<? extends BuiltinPrimitive>> getNodeFactories() {
         return new ArrayList<>();

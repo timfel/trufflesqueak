@@ -1,4 +1,4 @@
-package de.hpi.swa.trufflesqueak.nodes.primitives.impl;
+package de.hpi.swa.trufflesqueak.nodes.primitives;
 
 import java.math.BigInteger;
 import java.util.List;
@@ -13,10 +13,8 @@ import de.hpi.swa.trufflesqueak.model.CompiledMethodObject;
 import de.hpi.swa.trufflesqueak.model.LargeInteger;
 import de.hpi.swa.trufflesqueak.model.ListObject;
 import de.hpi.swa.trufflesqueak.model.NativeObject;
-import de.hpi.swa.trufflesqueak.nodes.primitives.BuiltinPrimitive;
-import de.hpi.swa.trufflesqueak.nodes.primitives.Primitive;
 
-public final class ArithmeticPrimitives extends Primitives {
+public final class ArithmeticPrimitives extends PrimitiveSet {
     @Override
     protected List<NodeFactory<? extends BuiltinPrimitive>> getNodeFactories() {
         return ArithmeticPrimitivesFactory.getFactories();

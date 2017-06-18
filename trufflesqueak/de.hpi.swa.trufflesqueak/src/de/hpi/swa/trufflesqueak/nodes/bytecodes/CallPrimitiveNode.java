@@ -15,7 +15,7 @@ import de.hpi.swa.trufflesqueak.model.CompiledCodeObject;
 import de.hpi.swa.trufflesqueak.nodes.SqueakNode;
 import de.hpi.swa.trufflesqueak.nodes.primitives.BuiltinPrimitive;
 import de.hpi.swa.trufflesqueak.nodes.primitives.PrimitiveNodeFactory;
-import de.hpi.swa.trufflesqueak.nodes.primitives.impl.QuickPrimitives.QuickReturnPrimitive;
+import de.hpi.swa.trufflesqueak.nodes.primitives.QuickPrimitives.QuickReturnPrimitive;
 
 public class CallPrimitiveNode extends SqueakBytecodeNode {
     @Child BuiltinPrimitive primitive;

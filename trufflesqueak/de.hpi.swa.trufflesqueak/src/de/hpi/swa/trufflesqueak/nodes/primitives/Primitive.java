@@ -8,10 +8,6 @@ package de.hpi.swa.trufflesqueak.nodes.primitives;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/**
- *
- * @author tim
- */
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Primitive {
     String module() default "";
@@ -20,7 +16,9 @@ public @interface Primitive {
 
     int[] indices() default {0};
 
+    boolean needsFrame() default false;
+
     int numberOfArguments() default 0;
 
-    boolean needsFrame() default false;
+    int maxNumberOfArguments() default 0;
 }

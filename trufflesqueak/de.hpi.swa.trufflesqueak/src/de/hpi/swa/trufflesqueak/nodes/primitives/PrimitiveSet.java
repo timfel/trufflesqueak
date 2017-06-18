@@ -1,4 +1,4 @@
-package de.hpi.swa.trufflesqueak.nodes.primitives.impl;
+package de.hpi.swa.trufflesqueak.nodes.primitives;
 
 import java.util.List;
 
@@ -7,10 +7,8 @@ import com.oracle.truffle.api.dsl.NodeFactory;
 import de.hpi.swa.trufflesqueak.model.CompiledCodeObject;
 import de.hpi.swa.trufflesqueak.nodes.context.ArgumentNode;
 import de.hpi.swa.trufflesqueak.nodes.context.ArgumentProfileNode;
-import de.hpi.swa.trufflesqueak.nodes.primitives.BuiltinPrimitive;
-import de.hpi.swa.trufflesqueak.nodes.primitives.Primitive;
 
-public abstract class Primitives {
+public abstract class PrimitiveSet {
     abstract List<NodeFactory<? extends BuiltinPrimitive>> getNodeFactories();
 
     public BuiltinPrimitive forName(CompiledCodeObject cc, String module, String functionName) {
@@ -44,10 +42,11 @@ public abstract class Primitives {
     }
 
     private static BuiltinPrimitive getBuiltinPrimitive(CompiledCodeObject cc, NodeFactory<? extends BuiltinPrimitive> factory, Primitive annotation) {
-        Object[] arguments = new Object[annotation.numberOfArguments() + 1];
+        int argumentNumber = Math.max(annotation.numberOfArguments(), annotation.maxNumberOfArguments());
+        Object[] arguments = new Object[argumentNumber + 1];
         arguments[0] = cc;
-        for (int i = 0; i < annotation.numberOfArguments(); i++) {
-            arguments[i + 1] = new ArgumentProfileNode(new ArgumentNode(i));
+        for (int i = 0; i < argumentNumber; i++) {
+            arguments[i + 1] = new ArgumentProfileNode(ArgumentNode.create(i));
         }
         return factory.createNode(arguments);
     }
