@@ -47,7 +47,7 @@ def _extract_squeak_args(args):
             squeakArgs.append(arg)
             squeakArgs.append(args[i])
             i += 1
-        elif arg in ["--help"]:
+        elif arg in ["--help", "-v", "--verbose", "-t", "--trace"]:
             squeakArgs.append(arg)
         elif arg.endswith(".image"):
             squeakArgs.append(arg)
