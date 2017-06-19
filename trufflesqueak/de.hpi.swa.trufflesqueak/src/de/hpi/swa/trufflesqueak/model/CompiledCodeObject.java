@@ -12,7 +12,6 @@ import com.oracle.truffle.api.frame.FrameDescriptor;
 import com.oracle.truffle.api.frame.FrameSlot;
 import com.oracle.truffle.api.frame.FrameSlotKind;
 import com.oracle.truffle.api.frame.VirtualFrame;
-import com.oracle.truffle.api.interop.ForeignAccess;
 import com.oracle.truffle.api.source.Source;
 import com.oracle.truffle.api.utilities.CyclicAssumption;
 
@@ -135,11 +134,6 @@ public abstract class CompiledCodeObject extends SqueakObject {
 
     public Assumption getCallTargetStable() {
         return callTargetStable.getAssumption();
-    }
-
-    public ForeignAccess getForeignAccess() {
-        // TODO Auto-generated method stub
-        return null;
     }
 
     @Override

@@ -4,13 +4,10 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.CharBuffer;
 
-import com.oracle.truffle.api.interop.ForeignAccess;
-import com.oracle.truffle.api.interop.TruffleObject;
-
 import de.hpi.swa.trufflesqueak.SqueakImageContext;
 import de.hpi.swa.trufflesqueak.util.Chunk;
 
-public class NativeObject extends SqueakObject implements TruffleObject {
+public class NativeObject extends SqueakObject {
     private ByteBuffer content;
     private byte elementSize;
 
@@ -67,11 +64,6 @@ public class NativeObject extends SqueakObject implements TruffleObject {
     @Override
     public String toString() {
         return new String(content.array());
-    }
-
-    public ForeignAccess getForeignAccess() {
-        // TODO Auto-generated method stub
-        return null;
     }
 
     @Override

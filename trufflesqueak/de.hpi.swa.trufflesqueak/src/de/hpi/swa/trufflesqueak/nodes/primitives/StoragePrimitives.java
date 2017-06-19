@@ -118,7 +118,7 @@ public final class StoragePrimitives extends PrimitiveSet {
         }
 
         @Specialization
-        public int size(Object obj) {
+        public int size(@SuppressWarnings("unused") Object obj) {
             return 0;
         }
     }
