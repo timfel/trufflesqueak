@@ -33,7 +33,7 @@ public class CallPrimitiveNode extends SqueakBytecodeNode {
             throw new LocalReturn(primitive.executeGeneric(frame));
         } catch (UnsupportedSpecializationException
                         | PrimitiveFailed
-                        | IndexOutOfBoundsException e) {
+                        | ArrayIndexOutOfBoundsException e) {
             return null;
         }
     }
