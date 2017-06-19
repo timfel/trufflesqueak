@@ -77,7 +77,7 @@ public final class StoragePrimitives extends PrimitiveSet {
             super(cm);
         }
 
-        @Specialization(guards = "isNull(obj)")
+        @Specialization
         public int size(@SuppressWarnings("unused") char obj) {
             return 0;
         }
@@ -112,9 +112,14 @@ public final class StoragePrimitives extends PrimitiveSet {
             return 2; // Float in words
         }
 
-        @Specialization
+        @Specialization(guards = "!isNull(obj)")
         public int size(BaseSqueakObject obj) {
             return obj.size();
+        }
+
+        @Specialization
+        public int size(Object obj) {
+            return 0;
         }
     }
 

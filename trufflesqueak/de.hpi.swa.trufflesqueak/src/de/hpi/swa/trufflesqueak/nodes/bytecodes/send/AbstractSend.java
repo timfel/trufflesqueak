@@ -9,6 +9,7 @@ import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.instrumentation.StandardTags;
 import com.oracle.truffle.api.nodes.ExplodeLoop;
 import com.oracle.truffle.api.nodes.UnexpectedResultException;
+import com.oracle.truffle.api.profiles.ValueProfile;
 
 import de.hpi.swa.trufflesqueak.instrumentation.PrettyPrintVisitor;
 import de.hpi.swa.trufflesqueak.model.ClassObject;
@@ -27,6 +28,7 @@ import de.hpi.swa.trufflesqueak.nodes.context.SqueakLookupClassNode;
 import de.hpi.swa.trufflesqueak.nodes.context.SqueakLookupClassNodeGen;
 
 public abstract class AbstractSend extends SqueakBytecodeNode {
+    private final ValueProfile classProfile = ValueProfile.createClassProfile();
     public final Object selector;
     @Child public SqueakNode receiverNode;
     @Child protected SqueakLookupClassNode lookupClassNode;
@@ -54,7 +56,7 @@ public abstract class AbstractSend extends SqueakBytecodeNode {
 
     @Override
     public Object executeGeneric(VirtualFrame frame) {
-        Object receiver = receiverNode.executeGeneric(frame);
+        Object receiver = classProfile.profile(receiverNode.executeGeneric(frame));
         return executeSend(frame, receiver);
         // TODO: OaM
     }

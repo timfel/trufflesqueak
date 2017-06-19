@@ -8,6 +8,7 @@ import java.math.BigInteger;
 
 import com.oracle.truffle.api.CallTarget;
 import com.oracle.truffle.api.CompilerAsserts;
+import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
 import com.oracle.truffle.api.Truffle;
 
 import de.hpi.swa.trufflesqueak.model.BaseSqueakObject;
@@ -175,5 +176,13 @@ public class SqueakImageContext {
 
     public ListObject wrap(Object... elements) {
         return new ListObject(this, arrayClass, elements);
+    }
+
+    @TruffleBoundary
+    public void print(Object... things) {
+        for (Object o : things) {
+            getOutput().print(o);
+        }
+        getOutput().println();
     }
 }

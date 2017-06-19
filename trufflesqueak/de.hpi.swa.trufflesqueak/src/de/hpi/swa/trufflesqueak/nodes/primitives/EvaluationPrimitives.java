@@ -17,6 +17,7 @@ import com.oracle.truffle.api.frame.FrameUtil;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.nodes.ExplodeLoop;
 import com.oracle.truffle.api.nodes.UnexpectedResultException;
+import com.oracle.truffle.api.profiles.ValueProfile;
 
 import de.hpi.swa.trufflesqueak.exceptions.SqueakExit;
 import de.hpi.swa.trufflesqueak.model.BlockClosure;
@@ -44,6 +45,7 @@ public final class EvaluationPrimitives extends PrimitiveSet {
     @Primitive(indices = {83})
     @GenerateNodeFactory
     public static class Perform extends BuiltinPrimitive {
+        private final ValueProfile classProfile = ValueProfile.createClassProfile();
         @Child public SqueakNode receiverNode;
         @Child public SqueakNode selectorNode;
         @Child protected SqueakLookupClassNode lookupClassNode;
@@ -61,7 +63,7 @@ public final class EvaluationPrimitives extends PrimitiveSet {
         @ExplodeLoop
         public Object perform(VirtualFrame frame) {
             Object[] args = frame.getArguments();
-            Object receiver = args[0];
+            Object receiver = classProfile.profile(args[0]);
             ClassObject rcvrClass;
             try {
                 rcvrClass = SqueakTypesGen.expectClassObject(lookupClassNode.executeLookup(receiver));

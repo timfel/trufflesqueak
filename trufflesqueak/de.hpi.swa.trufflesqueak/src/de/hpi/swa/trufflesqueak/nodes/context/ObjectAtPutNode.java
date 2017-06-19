@@ -5,6 +5,7 @@ import java.math.BigInteger;
 import com.oracle.truffle.api.dsl.NodeChild;
 import com.oracle.truffle.api.dsl.NodeChildren;
 import com.oracle.truffle.api.dsl.Specialization;
+import com.oracle.truffle.api.profiles.ValueProfile;
 
 import de.hpi.swa.trufflesqueak.instrumentation.PrettyPrintVisitor;
 import de.hpi.swa.trufflesqueak.model.BaseSqueakObject;
@@ -15,6 +16,7 @@ import de.hpi.swa.trufflesqueak.nodes.SqueakNodeWithMethod;
 
 @NodeChildren({@NodeChild(value = "objectNode", type = SqueakNode.class), @NodeChild(value = "valueNode", type = SqueakNode.class)})
 public abstract class ObjectAtPutNode extends SqueakNodeWithMethod {
+    private final ValueProfile classProfile = ValueProfile.createClassProfile();
     public final int index;
 
     public ObjectAtPutNode(ObjectAtPutNode original) {
@@ -29,31 +31,31 @@ public abstract class ObjectAtPutNode extends SqueakNodeWithMethod {
 
     @Specialization
     protected Object write(NativeObject object, int value) {
-        object.setNativeAt0(index, value);
+        classProfile.profile(object).setNativeAt0(index, value);
         return value;
     }
 
     @Specialization
     protected Object write(BaseSqueakObject object, int value) {
-        object.atput0(index, value);
+        classProfile.profile(object).atput0(index, value);
         return value;
     }
 
     @Specialization
     protected Object write(BaseSqueakObject object, long value) {
-        object.atput0(index, value);
+        classProfile.profile(object).atput0(index, value);
         return value;
     }
 
     @Specialization
     protected Object write(BaseSqueakObject object, BigInteger value) {
-        object.atput0(index, object.image.wrap(value));
+        classProfile.profile(object).atput0(index, object.image.wrap(value));
         return value;
     }
 
     @Specialization
     protected Object write(BaseSqueakObject object, Object value) {
-        object.atput0(index, value);
+        classProfile.profile(object).atput0(index, value);
         return value;
     }
 

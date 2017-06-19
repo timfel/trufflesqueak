@@ -26,7 +26,7 @@ public class BuiltinPrimitive extends SqueakNodeWithMethod {
     @Override
     public Object executeGeneric(VirtualFrame frame) {
         if (method.image.config.isVerbose()) {
-            System.out.println("Primitive not yet written: " + method.toString());
+            method.image.print("Primitive not yet written: ", method);
         }
         throw new PrimitiveFailed();
     }
