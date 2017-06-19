@@ -216,21 +216,20 @@ public final class StoragePrimitives extends PrimitiveSet {
         }
 
         @SuppressWarnings("unused")
-        @Specialization(limit = "NEW_CACHE_SIZE", guards = {"receiver == cachedReceiver"}, assumptions = {"classFormatStable"})
+        @Specialization(limit = "NEW_CACHE_SIZE", guards = {"receiver == cachedReceiver", "size > 0", "cachedIsVariable"}, assumptions = {"classFormatStable"})
         BaseSqueakObject newWithArgDirect(ClassObject receiver, int size,
                         @Cached("receiver") ClassObject cachedReceiver,
+                        @Cached("cachedReceiver.isVariable()") boolean cachedIsVariable,
                         @Cached("cachedReceiver.getClassFormatStable()") Assumption classFormatStable) {
-            if (size == 0 || !cachedReceiver.isVariable())
-                throw new PrimitiveFailed();
             return cachedReceiver.newInstance(size);
         }
 
         @Specialization(replaces = "newWithArgDirect")
         BaseSqueakObject newWithArg(ClassObject receiver, int size) {
-            if (size == 0)
-                return null;
+            if (size <= 0)
+                throw new PrimitiveFailed();
             if (!receiver.isVariable())
-                return null;
+                throw new PrimitiveFailed();
             return receiver.newInstance(size);
         }
     }
