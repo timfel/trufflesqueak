@@ -207,6 +207,7 @@ public final class StoragePrimitives extends PrimitiveSet {
     }
 
     @Primitive(indices = {71}, numberOfArguments = 2)
+    @GenerateNodeFactory
     public static class NewArg extends BuiltinPrimitive {
         final static int NEW_CACHE_SIZE = 3;
 

@@ -458,6 +458,7 @@ public final class ArithmeticPrimitives extends PrimitiveSet {
     }
 
     @Primitive(indices = {13, 33}, numberOfArguments = 2)
+    @GenerateNodeFactory
     public static class Quo extends BuiltinPrimitive {
         public Quo(CompiledCodeObject cm) {
             super(cm);
@@ -536,7 +537,7 @@ public final class ArithmeticPrimitives extends PrimitiveSet {
 
         @Specialization
         protected BigInteger bitOr(BigInteger receiver, BigInteger arg) {
-            return receiver.and(arg);
+            return receiver.or(arg);
         }
     }
 
@@ -559,11 +560,12 @@ public final class ArithmeticPrimitives extends PrimitiveSet {
 
         @Specialization
         protected BigInteger bitXor(BigInteger receiver, BigInteger arg) {
-            return receiver.and(arg);
+            return receiver.xor(arg);
         }
     }
 
     @Primitive(indices = {17, 47}, numberOfArguments = 2, module = "LargeIntegers", names = {"primDigitBitShiftMagnitude"})
+    @GenerateNodeFactory
     public static class BitShift extends BuiltinPrimitive {
         @Child Normalize normalizeNode;
 
