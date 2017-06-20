@@ -29,7 +29,8 @@ def _extract_squeak_args(args):
         arg = args[i]
         i += 1
         if arg == "-debug":
-            other += ["-Xdebug",
+            other += ["-Dgraal.TruffleBackgroundCompilation=false",
+                      "-Xdebug",
                       "-Xrunjdwp:transport=dt_socket,server=y,address=8000,suspend=y"]
         elif arg == "-dump":
             other += ["-Dgraal.Dump=",
@@ -43,14 +44,10 @@ def _extract_squeak_args(args):
                       "-Dgraal.TruffleBackgroundCompilation=false",
                       "-Dgraal.TraceTruffleCompilation=true",
                       "-Dgraal.TraceTruffleCompilationDetails=true"]
-        elif arg in ["-r", "-m"]:
-            squeakArgs.append(arg)
-            squeakArgs.append(args[i])
-            i += 1
-        elif arg in ["--help", "-v", "--verbose", "-t", "--trace"]:
-            squeakArgs.append(arg)
         elif arg.endswith(".image"):
             squeakArgs.append(arg)
+            squeakArgs.extend(args[i:])
+            break
         else:
             other.append(arg)
     return other, squeakArgs
