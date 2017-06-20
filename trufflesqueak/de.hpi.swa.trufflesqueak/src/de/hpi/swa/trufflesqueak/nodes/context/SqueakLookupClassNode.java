@@ -78,13 +78,13 @@ public abstract class SqueakLookupClassNode extends Node {
         return method.image.methodContextClass;
     }
 
-    @Specialization(rewriteOn = UnexpectedResultException.class)
+    @Specialization(guards = "!isNull(object)", rewriteOn = UnexpectedResultException.class)
     public ClassObject squeakClass(SqueakObject object) throws UnexpectedResultException {
         return SqueakTypesGen.expectClassObject(object.getSqClass());
     }
 
     @SuppressWarnings("unused")
-    @Specialization(guards = "isNull(object)")
+    @Specialization
     public ClassObject nilClass(Object object) {
         return method.image.nilClass;
     }

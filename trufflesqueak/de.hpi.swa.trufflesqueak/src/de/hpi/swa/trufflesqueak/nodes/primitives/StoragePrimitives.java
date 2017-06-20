@@ -559,7 +559,7 @@ public final class StoragePrimitives extends PrimitiveSet {
         }
     }
 
-    @Primitive(indices = {170}, numberOfArguments = 1)
+    @Primitive(indices = {170}, numberOfArguments = 1, ignoresReceiver = true)
     @GenerateNodeFactory
     public static class CharacterValue extends BuiltinPrimitive {
 
@@ -568,12 +568,12 @@ public final class StoragePrimitives extends PrimitiveSet {
         }
 
         @Specialization
-        protected char value(@SuppressWarnings("unused") BaseSqueakObject ignored, char value) {
+        protected char value(char value) {
             return value;
         }
 
         @Specialization
-        protected char value(@SuppressWarnings("unused") BaseSqueakObject ignored, int value) {
+        protected char value(int value) {
             return (char) value;
         }
     }

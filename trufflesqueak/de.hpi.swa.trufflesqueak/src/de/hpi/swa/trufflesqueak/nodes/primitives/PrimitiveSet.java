@@ -49,7 +49,8 @@ public abstract class PrimitiveSet {
         SqueakNode[] argumentNodes = new SqueakNode[argumentNumber];
         arguments[1] = argumentNodes;
         for (int i = 0; i < argumentNumber; i++) {
-            argumentNodes[i] = new ArgumentProfileNode(ArgumentNode.create(i));
+            int j = annotation.ignoresReceiver() ? i + 1 : i;
+            argumentNodes[i] = new ArgumentProfileNode(ArgumentNode.create(j));
         }
         return factory.createNode(arguments);
     }

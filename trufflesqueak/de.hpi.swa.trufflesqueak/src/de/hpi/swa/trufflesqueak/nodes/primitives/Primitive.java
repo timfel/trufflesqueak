@@ -18,6 +18,8 @@ public @interface Primitive {
 
     boolean needsFrame() default false;
 
+    boolean ignoresReceiver() default false;
+
     int numberOfArguments() default 0;
 
     int maxNumberOfArguments() default 0;

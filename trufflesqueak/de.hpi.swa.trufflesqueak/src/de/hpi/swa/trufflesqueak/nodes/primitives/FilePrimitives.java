@@ -17,7 +17,7 @@ public final class FilePrimitives extends PrimitiveSet {
         return FilePrimitivesFactory.getFactories();
     }
 
-    @Primitive(names = {"primitiveFileWrite"}, module = "FilePlugin", numberOfArguments = 5)
+    @Primitive(names = {"primitiveFileWrite"}, module = "FilePlugin", numberOfArguments = 4, ignoresReceiver = true)
     @GenerateNodeFactory
     public static class FileWrite extends BuiltinPrimitive {
         public FileWrite(CompiledCodeObject method2) {
@@ -26,7 +26,7 @@ public final class FilePrimitives extends PrimitiveSet {
 
         @Specialization
         @TruffleBoundary
-        int write(@SuppressWarnings("unused") Object receiver, int fd, NativeObject content, int start, int count) {
+        int write(int fd, NativeObject content, int start, int count) {
             // TODO: use registry of files
             String chars = content.toString();
             int elementSize = content.getElementSize();
@@ -48,7 +48,7 @@ public final class FilePrimitives extends PrimitiveSet {
         }
     }
 
-    @Primitive(names = {"primitiveFileSize"}, module = "FilePlugin", numberOfArguments = 1)
+    @Primitive(names = {"primitiveFileSize"}, module = "FilePlugin", numberOfArguments = 1, ignoresReceiver = true)
     @GenerateNodeFactory
     public static class FileSize extends BuiltinPrimitive {
         public FileSize(CompiledCodeObject method2) {
@@ -56,7 +56,7 @@ public final class FilePrimitives extends PrimitiveSet {
         }
 
         @Specialization
-        int size(@SuppressWarnings("unused") Object receiver, int fd) {
+        int size(int fd) {
             // TODO: use registry of files
             if (fd <= 2) {
                 return 0;
