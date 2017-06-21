@@ -15,6 +15,7 @@ import de.hpi.swa.trufflesqueak.model.BaseSqueakObject;
 import de.hpi.swa.trufflesqueak.model.BlockClosure;
 import de.hpi.swa.trufflesqueak.model.ClassObject;
 import de.hpi.swa.trufflesqueak.model.CompiledCodeObject;
+import de.hpi.swa.trufflesqueak.model.ContextObject;
 import de.hpi.swa.trufflesqueak.model.EmptyObject;
 import de.hpi.swa.trufflesqueak.model.LargeInteger;
 import de.hpi.swa.trufflesqueak.model.ListObject;
@@ -70,7 +71,7 @@ public final class StoragePrimitives extends PrimitiveSet {
         }
     }
 
-    @Primitive(indices = {62}, numberOfArguments = 1)
+    @Primitive(indices = {62, 212}, numberOfArguments = 1)
     @GenerateNodeFactory
     public static class Size extends BuiltinPrimitive {
         public Size(CompiledCodeObject cm) {
@@ -110,6 +111,11 @@ public final class StoragePrimitives extends PrimitiveSet {
         @Specialization
         public int size(@SuppressWarnings("unused") double o) {
             return 2; // Float in words
+        }
+
+        @Specialization
+        public int size(ContextObject o) {
+            return o.size();
         }
 
         @Specialization(guards = "!isNull(obj)")

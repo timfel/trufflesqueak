@@ -122,7 +122,7 @@ public class ReadOnlyContextObject extends BaseSqueakObject implements ActualCon
                     FrameDescriptor currentFD = current.getFrameDescriptor();
                     FrameSlot currentMarkerSlot = currentFD.findFrameSlot(CompiledCodeObject.MARKER);
                     if (foundMyself) {
-                        sender = ContextObject.createReadOnlyContextObject(image, current);
+                        sender = ContextObject.createReadOnlyContextObject(image, frameInstance.getFrame(FrameInstance.FrameAccess.MATERIALIZE));
                         return sender;
                     } else if (marker == FrameUtil.getObjectSafe(current, currentMarkerSlot)) {
                         foundMyself = true;
