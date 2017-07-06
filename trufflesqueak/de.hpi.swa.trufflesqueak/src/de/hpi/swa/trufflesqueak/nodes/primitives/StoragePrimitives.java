@@ -1,27 +1,24 @@
 package de.hpi.swa.trufflesqueak.nodes.primitives;
 
-import java.math.BigInteger;
-import java.util.List;
-
 import com.oracle.truffle.api.Assumption;
 import com.oracle.truffle.api.dsl.Cached;
 import com.oracle.truffle.api.dsl.GenerateNodeFactory;
 import com.oracle.truffle.api.dsl.NodeFactory;
 import com.oracle.truffle.api.dsl.Specialization;
-
 import de.hpi.swa.trufflesqueak.exceptions.PrimitiveFailed;
 import de.hpi.swa.trufflesqueak.model.AbstractPointersObject;
 import de.hpi.swa.trufflesqueak.model.BaseSqueakObject;
 import de.hpi.swa.trufflesqueak.model.BlockClosure;
 import de.hpi.swa.trufflesqueak.model.ClassObject;
 import de.hpi.swa.trufflesqueak.model.CompiledCodeObject;
-import de.hpi.swa.trufflesqueak.model.ContextObject;
 import de.hpi.swa.trufflesqueak.model.EmptyObject;
 import de.hpi.swa.trufflesqueak.model.LargeInteger;
 import de.hpi.swa.trufflesqueak.model.ListObject;
 import de.hpi.swa.trufflesqueak.model.NativeObject;
 import de.hpi.swa.trufflesqueak.nodes.context.SqueakLookupClassNode;
 import de.hpi.swa.trufflesqueak.nodes.context.SqueakLookupClassNodeGen;
+import java.math.BigInteger;
+import java.util.List;
 
 public final class StoragePrimitives extends PrimitiveSet {
     @Override
@@ -89,11 +86,6 @@ public final class StoragePrimitives extends PrimitiveSet {
         }
 
         @Specialization
-        public int size(@SuppressWarnings("unused") int o) {
-            return 0;
-        }
-
-        @Specialization
         public int size(@SuppressWarnings("unused") long o) {
             return 0;
         }
@@ -113,12 +105,7 @@ public final class StoragePrimitives extends PrimitiveSet {
             return 2; // Float in words
         }
 
-        @Specialization
-        public int size(ContextObject o) {
-            return o.size();
-        }
-
-        @Specialization(guards = "!isNull(obj)")
+        @Specialization(guards = {"!isNull(obj)"})
         public int size(BaseSqueakObject obj) {
             return obj.size();
         }
@@ -283,14 +270,16 @@ public final class StoragePrimitives extends PrimitiveSet {
             }
         }
 
-        @Specialization(rewriteOn = ArithmeticException.class)
-        protected int intAt(NativeObject receiver, int idx) throws ArithmeticException {
-            return Math.toIntExact(receiver.getNativeAt0(idx - 1));
+        @Specialization(limit = "4", guards = {"cachedElementSize == receiver.getElementSize()", "cachedElementSize <= 4"}, rewriteOn = ArithmeticException.class)
+        protected int intAt(NativeObject receiver, int idx,
+                        @Cached("receiver.getElementSize()") byte cachedElementSize) {
+            return (int) (receiver.getNativeAt0(idx - 1, cachedElementSize));
         }
 
-        @Specialization
-        protected long longAt(NativeObject receiver, int idx) {
-            return receiver.getNativeAt0(idx - 1);
+        @Specialization(guards = {"cachedElementSize == 8"}, rewriteOn = ArithmeticException.class)
+        protected long longAt(NativeObject receiver, int idx,
+                        @Cached("receiver.getElementSize()") byte cachedElementSize) {
+            return receiver.getNativeAt0(idx - 1, cachedElementSize);
         }
 
         @Specialization

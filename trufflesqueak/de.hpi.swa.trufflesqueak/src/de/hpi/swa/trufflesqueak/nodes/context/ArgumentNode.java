@@ -6,6 +6,7 @@ import com.oracle.truffle.api.frame.VirtualFrame;
 import de.hpi.swa.trufflesqueak.nodes.SqueakNode;
 
 public abstract class ArgumentNode extends SqueakNode {
+    public static final Object NO_ARGUMENT = new Object();
     protected final int idx;
 
     protected ArgumentNode(int index) {
@@ -39,7 +40,7 @@ public abstract class ArgumentNode extends SqueakNode {
 
         @Override
         public Object executeGeneric(VirtualFrame frame) {
-            return null;
+            return NO_ARGUMENT;
         }
     }
 
@@ -54,7 +55,7 @@ public abstract class ArgumentNode extends SqueakNode {
             Object[] arguments = frame.getArguments();
             if (idx >= arguments.length) {
                 replace(new OutOfBoundsArgumentNode(idx));
-                return null;
+                return NO_ARGUMENT;
             } else {
                 replace(new GivenArgumentNode(idx));
                 return arguments[idx];

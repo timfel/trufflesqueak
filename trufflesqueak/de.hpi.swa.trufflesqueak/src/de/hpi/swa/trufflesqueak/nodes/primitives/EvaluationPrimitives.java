@@ -33,6 +33,7 @@ import de.hpi.swa.trufflesqueak.nodes.LookupNode;
 import de.hpi.swa.trufflesqueak.nodes.LookupNodeGen;
 import de.hpi.swa.trufflesqueak.nodes.SqueakNode;
 import de.hpi.swa.trufflesqueak.nodes.SqueakTypesGen;
+import de.hpi.swa.trufflesqueak.nodes.context.ArgumentNode;
 import de.hpi.swa.trufflesqueak.nodes.context.SqueakLookupClassNode;
 import de.hpi.swa.trufflesqueak.nodes.context.SqueakLookupClassNodeGen;
 
@@ -158,13 +159,13 @@ public final class EvaluationPrimitives extends PrimitiveSet {
         @Specialization
         protected Object value(BlockClosure block, Object a1, Object a2, Object a3, Object a4) {
             Object[] frameArguments;
-            if (a1 == null) {
+            if (a1 == ArgumentNode.NO_ARGUMENT) {
                 frameArguments = block.getFrameArguments();
-            } else if (a2 == null) {
+            } else if (a2 == ArgumentNode.NO_ARGUMENT) {
                 frameArguments = block.getFrameArguments(a1);
-            } else if (a3 == null) {
+            } else if (a3 == ArgumentNode.NO_ARGUMENT) {
                 frameArguments = block.getFrameArguments(a1, a2);
-            } else if (a4 == null) {
+            } else if (a4 == ArgumentNode.NO_ARGUMENT) {
                 frameArguments = block.getFrameArguments(a1, a2, a3);
             } else {
                 frameArguments = block.getFrameArguments(a1, a2, a3, a4);

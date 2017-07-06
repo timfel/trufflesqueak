@@ -81,7 +81,11 @@ public class NativeObject extends SqueakObject {
     }
 
     public long getNativeAt0(int index) {
-        switch (elementSize) {
+        return getNativeAt0(index, elementSize);
+    }
+
+    public long getNativeAt0(int index, byte assumedElementSize) {
+        switch (assumedElementSize) {
             case 1:
                 return content.get(index) & 0xFF;
             case 2:
